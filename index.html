@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Hồng Vân AI Studio | Luxury Mesh Edition</title>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #f472b6; /* Rose Pink */
+            --gold: #fbbf24; /* Amber Gold */
+            --bg-dark: #020617;
+            --glass-bg: rgba(15, 23, 42, 0.85);
+            --glass-border: rgba(244, 114, 182, 0.2);
+            --font-heading: 'Plus Jakarta Sans', sans-serif;
+            --font-body: 'Be Vietnam Pro', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        /* NỀN GRADIENT CHUYỂN ĐỘNG */
+        body {
+            background: var(--bg-dark);
+            font-family: var(--font-body);
+            color: #f1f5f9;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: 
+                radial-gradient(circle at 10% 20%, rgba(244, 114, 182, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(251, 191, 36, 0.1) 0%, transparent 40%),
+                radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.1) 0%, transparent 50%);
+            animation: meshMove 20s infinite alternate;
+            z-index: -1;
+        }
+
+        @keyframes meshMove {
+            0% { transform: scale(1) translate(0, 0); }
+            50% { transform: scale(1.2) translate(5%, 5%); }
+            100% { transform: scale(1) translate(-5%, 2%); }
+        }
+
+        /* App Shell */
+        .app-shell { display: flex; width: 100vw; height: 100vh; position: relative; }
+
+        /* Sidebar Luxury */
+        .sidebar {
+            width: 320px; background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            border-right: 1px solid var(--glass-border);
+            display: flex; flex-direction: column; z-index: 1001; transition: 0.4s ease;
+        }
+
+        .sidebar-header { padding: 40px 20px; text-align: center; }
+        .sidebar-header h1 { 
+            font-family: var(--font-heading); font-size: 1.4rem; font-weight: 800; 
+            color: var(--primary); letter-spacing: 4px; text-transform: uppercase;
+            text-shadow: 0 0 15px rgba(244, 114, 182, 0.4);
+        }
+
+        .category-list { flex: 1; overflow-y: auto; padding: 15px; }
+        .category-item {
+            padding: 14px 18px; margin-bottom: 8px; border-radius: 16px;
+            cursor: pointer; display: flex; align-items: center; gap: 15px;
+            font-size: 0.9rem; color: #94a3b8; font-family: var(--font-heading);
+            transition: all 0.3s; border: 1px solid transparent;
+        }
+        .category-item i { color: var(--primary); font-size: 1.1rem; }
+        .category-item:hover { background: rgba(255, 255, 255, 0.05); color: #fff; transform: translateX(5px); }
+        .category-item.active { 
+            background: linear-gradient(135deg, rgba(244, 114, 182, 0.2), rgba(219, 39, 119, 0.4));
+            border: 1px solid var(--primary); color: #fff; font-weight: 700;
+            box-shadow: 0 8px 20px rgba(244, 114, 182, 0.2);
+        }
+
+        /* Main Chat */
+        .main-chat {
+            flex: 1; display: flex; flex-direction: column; 
+            background: transparent; position: relative; overflow: hidden;
+        }
+
+        header {
+            padding: 20px 40px; display: flex; justify-content: space-between; align-items: center;
+            background: rgba(15, 23, 42, 0.4); border-bottom: 1px solid var(--glass-border);
+            backdrop-filter: blur(10px);
+        }
+
+        .menu-btn { display: none; font-size: 1.6rem; color: var(--primary); cursor: pointer; }
+
+        #chat-flow {
+            flex: 1; overflow-y: auto; padding: 30px 50px; display: flex; flex-direction: column; gap: 30px;
+            padding-bottom: 150px;
+        }
+
+        /* Message Bubbles Luxury */
+        .bubble { 
+            max-width: 80%; padding: 22px 28px; border-radius: 30px; 
+            line-height: 1.8; font-size: 1rem; position: relative;
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            animation: bubbleUp 0.5s ease;
+        }
+
+        @keyframes bubbleUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .user-bubble { 
+            align-self: flex-end; background: linear-gradient(135deg, #f472b6, #db2777); 
+            color: #fff; border-bottom-right-radius: 5px; font-weight: 500;
+        }
+        .ai-bubble { 
+            align-self: flex-start; background: rgba(255, 255, 255, 0.04); 
+            border: 1px solid var(--glass-border); border-bottom-left-radius: 5px; 
+        }
+
+        /* Storyboard */
+        .story-img { 
+            width: 100%; border-radius: 24px; margin-top: 20px; 
+            border: 1px solid var(--glass-border); 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+
+        /* Tools */
+        .action-btns { display: flex; gap: 12px; margin-top: 20px; flex-wrap: wrap; }
+        .btn-tool {
+            background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border); 
+            color: #f1f5f9; padding: 10px 18px; border-radius: 12px; font-size: 0.8rem; 
+            cursor: pointer; transition: 0.3s; font-family: var(--font-heading); font-weight: 600;
+        }
+        .btn-tool:hover { background: #fff; color: #000; border-color: #fff; }
+
+        /* FIXED INPUT FOOTER */
+        .input-footer {
+            position: absolute; bottom: 0; left: 0; width: 100%;
+            padding: 30px 50px 40px 50px;
+            background: linear-gradient(to top, var(--bg-dark) 60%, transparent);
+            z-index: 1000;
+        }
+        .input-container {
+            max-width: 1000px; margin: 0 auto;
+            background: rgba(255, 255, 255, 0.06); border: 1.5px solid var(--glass-border);
+            border-radius: 40px; padding: 12px 35px; display: flex; align-items: center; gap: 15px;
+            backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+            transition: 0.3s; box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+        }
+        .input-container:focus-within { border-color: var(--primary); box-shadow: 0 0 20px rgba(244, 114, 182, 0.3); }
+
+        input { flex: 1; background: none; border: none; color: #fff; outline: none; font-size: 1.1rem; padding: 10px 0; }
+        input::placeholder { color: rgba(255, 255, 255, 0.3); }
+
+        #send-btn { 
+            background: var(--primary); border: none; color: #fff; padding: 12px 30px; 
+            border-radius: 25px; font-weight: 800; cursor: pointer; transition: 0.3s;
+            font-family: var(--font-heading); text-transform: uppercase; letter-spacing: 1px;
+        }
+        #send-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 15px rgba(244, 114, 182, 0.4); }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar { position: fixed; left: -320px; height: 100%; width: 280px; }
+            .sidebar.open { left: 0; }
+            .menu-btn { display: block; }
+            #chat-flow { padding: 20px; padding-bottom: 150px; }
+            .bubble { max-width: 95%; padding: 18px; font-size: 0.95rem; }
+            .input-footer { padding: 15px 15px 35px 15px; }
+            .input-container { padding: 8px 20px; }
+            header { padding: 15px 20px; }
+        }
+
+        /* Overlay */
+        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; backdrop-filter: blur(5px); }
+        .overlay.active { display: block; }
+
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+
+<div class="app-shell">
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h1>HỒNG VÂN AI</h1>
+            <p style="font-size:0.6rem; opacity:0.6; letter-spacing:4px; color: var(--gold); font-weight:800; margin-top:5px;">PREMIUM STUDIO</p>
+        </div>
+        <div class="category-list" id="niche-list"></div>
+    </div>
+
+    <div class="main-chat">
+        <header>
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <div class="menu-btn" onclick="toggleMenu()"><i class="fas fa-bars-staggered"></i></div>
+                <div style="font-weight: 800; color: #fff; letter-spacing:1px; font-family:var(--font-heading);" id="current-title">KHỞI TẠO Ý TƯỞNG</div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <i class="fas fa-trash-can" style="color:#f87171; cursor:pointer; font-size: 1.2rem; opacity:0.7;" onclick="clearChat()"></i>
+                <div style="font-size: 0.7rem; font-weight: 900; color: var(--gold); border: 2px solid var(--gold); padding: 6px 16px; border-radius: 20px; letter-spacing:1px;">VIP</div>
+            </div>
+        </header>
+
+        <div id="chat-flow"></div>
+
+        <!-- INPUT SECTION FIXED -->
+        <div class="input-footer">
+            <div class="input-container">
+                <input type="text" id="user-input" placeholder="Chị Vân nhập sản phẩm hoặc ý tưởng triệu view nhé...">
+                <button id="send-btn" onclick="startAI()">KHỞI TẠO</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const KEY = "sk-db602b70907695501c6675b193db83d0e701d37a7f232cd71ec5e6b616155bfb";
+    const ENDPOINT = "https://api.orimise.com/v1/chat/completions";
+
+    const NICHES = [
+        { id: "daoly", name: "Đạo lý Người que", icon: "fa-person-rays" },
+        { id: "thoitrang", name: "Thời trang Viral", icon: "fa-shirt" },
+        { id: "doanvat", name: "Đồ ăn vặt Affiliate", icon: "fa-hotdog" },
+        { id: "giadung", name: "Gia dụng thông minh", icon: "fa-house-laptop" },
+        { id: "suckhoe", name: "Sức khỏe & Đời sống", icon: "fa-heart-pulse" },
+        { id: "lamdep", name: "Làm đẹp (Beauty)", icon: "fa-wand-magic-sparkles" },
+        { id: "nhanhoa", name: "Sức khỏe nhân hóa", icon: "fa-user-doctor" },
+        { id: "tienganh", name: "Học tiếng Anh mỗi ngày", icon: "fa-language" },
+        { id: "caycanh", name: "Video Cây cảnh/Sân vườn", icon: "fa-leaf" },
+        { id: "giaydep", name: "Bán Giày dép triệu view", icon: "fa-shoe-prints" },
+        { id: "loikhuyen_sacdep", name: "Lời khuyên Sắc đẹp", icon: "fa-face-smile" },
+        { id: "loikhuyen_suckhoe", name: "Lời khuyên Sức khỏe", icon: "fa-kit-medical" },
+        { id: "mechong", name: "Mẹ chồng - Nàng dâu", icon: "fa-people-arrows" },
+        { id: "noithat", name: "Video Bán Nội thất", icon: "fa-couch" },
+        { id: "tuixach", name: "Review Túi xách", icon: "fa-bag-shopping" },
+        { id: "spa", name: "Video Spa chuyên nghiệp", icon: "fa-spa" },
+        { id: "batdongsan", name: "Bất động sản cao cấp", icon: "fa-building" },
+        { id: "xemay", name: "Quảng cáo Xe máy", icon: "fa-motorcycle" },
+        { id: "daoly_animated", name: "Hoạt hình Đạo lý", icon: "fa-clapperboard" }
+    ];
+
+    let currentId = "daoly";
+    let history = JSON.parse(localStorage.getItem('hongvan_luxury_v3')) || {};
+
+    const list = document.getElementById('niche-list');
+    NICHES.forEach(n => {
+        const div = document.createElement('div');
+        div.className = "category-item";
+        div.id = "btn-" + n.id;
+        div.innerHTML = `<i class="fas ${n.icon}"></i> ${n.name}`;
+        div.onclick = () => selectNiche(n.id);
+        list.appendChild(div);
+    });
+
+    function toggleMenu() {
+        document.getElementById('sidebar').classList.toggle('open');
+        document.getElementById('overlay').classList.toggle('active');
+    }
+
+    function selectNiche(id) {
+        currentId = id;
+        document.querySelectorAll('.category-item').forEach(e => e.classList.remove('active'));
+        const activeItem = document.getElementById('btn-'+id);
+        if(activeItem) activeItem.classList.add('active');
+        document.getElementById('current-title').innerText = NICHES.find(x=>x.id===id).name.toUpperCase();
+        if(window.innerWidth <= 768) toggleMenu();
+        renderChat();
+    }
+
+    function renderChat() {
+        const flow = document.getElementById('chat-flow');
+        flow.innerHTML = '';
+        const msgs = history[currentId] || [];
+        if(msgs.length === 0) {
+            addBubble('ai', `Chào chị **Hồng Vân**, em là trợ lý VIP đã sẵn sàng lên kịch bản **${NICHES.find(x=>x.id===currentId).name}**. Chị nhập tên sản phẩm nhé!`);
+        } else {
+            msgs.forEach(m => addBubble(m.role, m.content));
+        }
+        flow.scrollTop = flow.scrollHeight;
+    }
+
+    function addBubble(role, text) {
+        const flow = document.getElementById('chat-flow');
+        const div = document.createElement('div');
+        div.className = `bubble ${role === 'user' ? 'user-bubble' : 'ai-bubble'}`;
+        div.innerHTML = marked.parse(text);
+
+        if(role === 'ai') {
+            const btns = document.createElement('div');
+            btns.className = 'action-btns';
+            
+            const bCopy = document.createElement('button');
+            bCopy.className = 'btn-tool'; bCopy.innerHTML = `<i class="fas fa-copy"></i> Kịch bản`;
+            bCopy.onclick = () => { navigator.clipboard.writeText(text); alert("Đã copy kịch bản cho chị Vân rồi ạ!"); };
+            
+            const bPrompt = document.createElement('button');
+            bPrompt.className = 'btn-tool'; bPrompt.innerHTML = `<i class="fas fa-wand-sparkles"></i> Prompt Veo3`;
+            bPrompt.onclick = () => {
+                const ps = text.match(/Prompt cho Veo3:.*?\n/gi);
+                if(ps) { navigator.clipboard.writeText(ps.join("\n")); alert("Đã copy toàn bộ Prompt Veo3 ạ!"); }
+            };
+
+            btns.appendChild(bCopy); btns.appendChild(bPrompt);
+            div.appendChild(btns);
+
+            const reg = /Prompt cho Veo3:\s*(.*)/gi;
+            let m;
+            while((m = reg.exec(text)) !== null) {
+                const i = document.createElement('img');
+                i.className = 'story-img';
+                i.src = `https://image.pollinations.ai/prompt/${encodeURIComponent(m[1])}?width=800&height=450&nologo=true&seed=${Math.random()}`;
+                div.appendChild(i);
+            }
+        }
+        flow.appendChild(div);
+        flow.scrollTop = flow.scrollHeight;
+    }
+
+    async function startAI() {
+        const inp = document.getElementById('user-input');
+        const txt = inp.value.trim();
+        if(!txt) return;
+
+        addBubble('user', txt);
+        save(currentId, 'user', txt);
+        inp.value = '';
+
+        const load = document.createElement('div');
+        load.className = 'bubble ai-bubble';
+        load.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Chị Hồng Vân đợi em chút, em đang vẽ kịch bản triệu view...`;
+        document.getElementById('chat-flow').appendChild(load);
+
+        try {
+            const res = await fetch(ENDPOINT, {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${KEY}` },
+                body: JSON.stringify({
+                    model: "gpt-5.5",
+                    messages: [
+                        { role: "system", content: `Bạn là trợ lý VIP của chị Hồng Vân. Chuyên gia ${NICHES.find(x=>x.id===currentId).name}. Viết kịch bản video viral chất lượng cao. Mỗi phân cảnh hình ảnh phải bắt đầu bằng: Prompt cho Veo3: [tiếng Anh chi tiết cinematic]. Xưng em, gọi chị Hồng Vân.` },
+                        { role: "user", content: txt }
+                    ]
+                })
+            });
+            const data = await res.json();
+            document.getElementById('chat-flow').removeChild(load);
+            const aiTxt = data.choices[0].message.content;
+            addBubble('ai', aiTxt);
+            save(currentId, 'ai', aiTxt);
+        } catch(e) { 
+            document.getElementById('chat-flow').removeChild(load);
+            alert("Lỗi kết nối API rồi sếp Vân ơi!"); 
+        }
+    }
+
+    function save(id, role, content) {
+        if(!history[id]) history[id] = [];
+        history[id].push({role, content});
+        localStorage.setItem('hongvan_luxury_v3', JSON.stringify(history));
+    }
+
+    function clearChat() {
+        if(confirm("Chị Vân chắc chắn muốn xóa hội thoại này không?")) {
+            history[currentId] = [];
+            localStorage.setItem('hongvan_luxury_v3', JSON.stringify(history));
+            renderChat();
+        }
+    }
+
+    window.onload = () => selectNiche('daoly');
+    document.getElementById('user-input').addEventListener('keypress', (e) => { if(e.key === 'Enter') startAI(); });
+</script>
+</body>
+</html>
