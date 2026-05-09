@@ -305,16 +305,20 @@
 const API_KEY = "sk-da903be796012dbea7f3c6feb5bbc355fd066c4a223dfc4274cba5bc8abe1833";
 const API_URL = "https://api.orimise.com/v1/chat/completions";
 
-const SYSTEM_PROMPT = `Bạn là Trợ lý ảo thông minh của DJ GIA CARP.
-1. ĐA NGÔN NGỮ: Bạn có khả năng giao tiếp bằng mọi ngôn ngữ (Anh, Trung, Nhật, Hàn...). Khách dùng tiếng gì, bạn trả lời bằng tiếng đó.
-2. CÂU CHỐT CỐ ĐỊNH: Cuối mỗi câu trả lời, bạn phải luôn hỏi: "Bạn muốn inbox trực tiếp (Zalo/Facebook) hay thanh toán qua MB hoặc MoMo?" (Dịch câu này sang ngôn ngữ khách đang dùng).
-3. LOGIC KHÁCH NƯỚC NGOÀI (Khi thấy khách không dùng tiếng Việt):
-   - Đầu tiên, hãy hỏi khách: "Do you have Zalo?" (Hoặc ngôn ngữ tương ứng).
-   - Nếu khách nói không hoặc không biết Zalo, hãy gửi link Facebook cá nhân: https://www.facebook.com/djgiacarp
-4. THANH TOÁN (Gửi ảnh QR):
-   - MoMo: <br><img src='mom.jpg' class='chat-qr-img'>
-   - MB Bank: <br><img src='mb.JPG' class='chat-qr-img'>
-5. THÔNG TIN DỊCH VỤ: Khóa học (4tr, 6tr, 12tr), USB nhạc (999k-1.5tr), Booking show sự kiện.`;
+const SYSTEM_PROMPT = `Bạn là Trợ lý ảo của DJ GIA CARP (Kiều Hoàng Gia).
+QUY TẮC NGÔN NGỮ (BẮT BUỘC):
+1. PHẢI tự động nhận diện ngôn ngữ của khách hàng. Khách dùng tiếng gì (Anh, Trung, Nhật, Hàn...), bạn PHẢI trả lời 100% bằng ngôn ngữ đó. 
+2. Tuyệt đối không trả lời bằng tiếng Việt nếu khách đang nhắn bằng ngôn ngữ khác.
+3. Toàn bộ thông tin giá tiền, dịch vụ phải được dịch sang ngôn ngữ của khách.
+
+LOGIC CHỐT ĐƠN:
+- Khách nước ngoài: Hỏi "Do you have Zalo?" ngay. Nếu không, dẫn link Facebook: https://www.facebook.com/djgiacarp
+- Dịch vụ: Khóa học DJ (4tr - 12tr), USB Nhạc (999k - 1.5tr), Booking show.
+- Luôn kết thúc bằng câu hỏi (dịch sang tiếng khách dùng): "Bạn muốn inbox trực tiếp cho mình hay thanh toán qua MB/MoMo để nhận nhạc ngay?"
+
+GỬI ẢNH QR (Giữ nguyên thẻ HTML):
+- MoMo: <br><img src='mom.jpg' class='chat-qr-img'>
+- MB Bank: <br><img src='mb.JPG' class='chat-qr-img'>`;
 
 const toggleBtn = document.getElementById("gia-ai-toggle");
 const chatBox = document.getElementById("gia-ai-box");
@@ -345,7 +349,6 @@ function addMessage(content, type) {
 
     messageRow.innerHTML = avatarHTML;
     messageRow.appendChild(msgDiv);
-    
     messages.appendChild(messageRow);
     messages.scrollTop = messages.scrollHeight;
     return messageRow;
@@ -358,7 +361,7 @@ async function sendMessage() {
     addMessage(text, "user");
     input.value = "";
 
-    const currentLoader = addMessage('<span class="typing-loader">Đang suy nghĩ...</span>', "bot");
+    const loaderRow = addMessage('<span class="typing-loader">...</span>', "bot");
 
     try {
         const response = await fetch(API_URL, {
@@ -371,22 +374,22 @@ async function sendMessage() {
                 model: "gpt-5.5",
                 messages: [
                     { role: "system", content: SYSTEM_PROMPT },
-                    { role: "user", content: text }
+                    // Thêm chỉ thị ngôn ngữ vào mỗi tin nhắn của khách để ép AI dịch
+                    { role: "user", content: `(Detect language and reply in the same language): ${text}` }
                 ],
-                temperature: 0.8
+                temperature: 0.7
             })
         });
 
         const data = await response.json();
-        if (currentLoader) currentLoader.remove();
+        if (loaderRow) loaderRow.remove();
 
         if (data.choices && data.choices[0]) {
             let aiResponse = data.choices[0].message.content;
             addMessage(aiResponse.replace(/\n/g, "<br>"), "bot");
         }
     } catch (err) {
-        if (currentLoader) currentLoader.innerHTML = "Error connection. Please contact Zalo +84389311563";
-        console.error(err);
+        if (loaderRow) loaderRow.innerHTML = "Error! Please contact Zalo +84389311563";
     }
 }
 
